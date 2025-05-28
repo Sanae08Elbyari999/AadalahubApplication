@@ -43,13 +43,65 @@ public class AvocatDetailsService {
         return avocatDetailsRepository.existsById(id);
     }
 
+    // READ by Email
+    public Optional<AvocatDetails> getAvocatByEmail(String email) {
+        return avocatDetailsRepository.findByEmail(email);
+    }
+
+    // Check existence by Email
+    public boolean existsByEmail(String email) {
+        return avocatDetailsRepository.existsByEmail(email);
+    }
+
+    // Avocats disponibles en ligne
     public List<AvocatDetails> getAvocatsDisponiblesEnLigne() {
         return avocatDetailsRepository.findByDisponibleEnLigneTrue();
     }
 
+    // Avocats disponibles au cabinet
+    public List<AvocatDetails> getAvocatsDisponiblesAuCabinet() {
+        return avocatDetailsRepository.findByDisponibleAuCabinetTrue();
+    }
 
+    // Avocats certifiés
+    public List<AvocatDetails> getAvocatsCertifies() {
+        return avocatDetailsRepository.findByCertifieTrue();
+    }
 
+    // Recherche par spécialité
+    public List<AvocatDetails> searchBySpecialite(String specialite) {
+        return avocatDetailsRepository.findBySpecialitesContainingIgnoreCase(specialite);
+    }
+
+    // Recherche par nom ou prénom
+    public List<AvocatDetails> searchByNomOuPrenom(String keyword) {
+        return avocatDetailsRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(keyword, keyword);
+    }
+
+    // Recherche par adresse du cabinet
+    public List<AvocatDetails> searchByAdresse(String adresse) {
+        return avocatDetailsRepository.findByOfficeAddressContainingIgnoreCase(adresse);
+    }
+
+    // Recherche par pays
+    public List<AvocatDetails> searchByPays(String pays) {
+        return avocatDetailsRepository.findByPaysIgnoreCase(pays);
+    }
+    // Recherche combinée
+    public List<AvocatDetails> rechercherAvocats(String searchText, String ville, String filter, String service) {
+        // Simplification basique pour une démonstration ; idéalement, tu utilises JPA Specifications ou QueryDSL.
+
+        if (filter.equalsIgnoreCase("Office") && !ville.equalsIgnoreCase("Où ?")) {
+            return avocatDetailsRepository
+                    .findByOfficeAddressContainingIgnoreCaseAndSpecialitesContainingIgnoreCase(ville, searchText);
+        } else if (filter.equalsIgnoreCase("En ligne")) {
+            return avocatDetailsRepository
+                    .findByDisponibleEnLigneTrueAndSpecialitesContainingIgnoreCase(searchText);
+        } else {
+            return avocatDetailsRepository
+                    .findBySpecialitesContainingIgnoreCaseOrNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(
+                            searchText, searchText, searchText);
+        }
+    }
 
 }
-
-

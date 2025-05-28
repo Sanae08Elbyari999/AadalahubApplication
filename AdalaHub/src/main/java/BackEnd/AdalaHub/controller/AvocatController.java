@@ -3,40 +3,36 @@ package BackEnd.AdalaHub.controller;
 import BackEnd.AdalaHub.model.AvocatDetails;
 import BackEnd.AdalaHub.repository.AvocatDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-
-import BackEnd.AdalaHub.model.AvocatDetails;
-import BackEnd.AdalaHub.repository.AvocatDetailsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/avocat_details")
 public class AvocatController {
 
     @Autowired
     private AvocatDetailsRepository avocatDetailsRepository;
 
-    // Endpoint de test (GET /api)
+    // Récupérer tous les avocats
     @GetMapping
-    public ResponseEntity<String> testEndpoint() {
-        return ResponseEntity.ok("API AvocatDetails est opérationnelle");
+    public ResponseEntity<List<AvocatDetails>> getAllAvocats() {
+        List<AvocatDetails> avocats = avocatDetailsRepository.findAll();
+        return ResponseEntity.ok(avocats);
     }
 
-    // Endpoint pour tester GET avec URL /api/avocat_details
-    @GetMapping("/avocat_details")
-    public ResponseEntity<String> getMessage() {
-        return ResponseEntity.ok("GET /avocat_details réussi");
+    // Récupérer un avocat par son ID
+    @GetMapping("/{id}")
+    public ResponseEntity<AvocatDetails> getAvocatById(@PathVariable Long id) {
+        Optional<AvocatDetails> avocat = avocatDetailsRepository.findById(id);
+        return avocat.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Endpoint POST pour ajouter un avocat
-    @PostMapping("/avocat_details")
+    // Créer un nouvel avocat
+    @PostMapping
     public ResponseEntity<AvocatDetails> createAvocat(@RequestBody AvocatDetails avocatDetails) {
         AvocatDetails savedAvocat = avocatDetailsRepository.save(avocatDetails);
         return ResponseEntity.ok(savedAvocat);
